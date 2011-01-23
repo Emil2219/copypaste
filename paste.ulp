@@ -1,0 +1,437 @@
+// Copyright (c) 2009-2011, Benjamin Drung <benjamin.drung@gmail.com>
+//
+// paste.ulp - pastes clipboard script files into schematic and board
+//
+// Permission to use, copy, modify, and/or distribute this software for any
+// purpose with or without fee is hereby granted, provided that the above
+// copyright notice and this permission notice appear in all copies.
+//
+// THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+// WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+// MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+// ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+// WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+// ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+// OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+#require 5.10
+#include "copypaste_config.ulp"
+#include "copypaste_functions.ulp"
+
+// global values
+real dx = 0;
+real dy = 0;
+int sheet_offset = 0;
+
+// part rename list structure
+string prl_old[];
+string prl_new[];
+int prl_length = 0;
+
+// wire rename list structure
+string wrl_old[];
+string wrl_new[];
+int wrl_length = 0;
+
+void part_rename_list_print(string pre) {
+	int i;
+
+	printf("%spart rename list (%d):\n", pre, prl_length);
+	for(i = 0; i < prl_length; i++) {
+		printf("%s%s -> %s\n", pre, prl_old[i], prl_new[i]);
+	}
+}
+
+void wire_rename_list_print(string pre) {
+	int i;
+
+	printf("%swire rename list (%d):\n", pre, wrl_length);
+	for(i = 0; i < wrl_length; i++) {
+		printf("%s%s -> %s\n", pre, wrl_old[i], wrl_new[i]);
+	}
+}
+
+void part_rename_list_insert(string old, string new, int index) {
+	int i;
+
+	for(i = prl_length; i > index; i--) {
+		prl_old[i] = prl_old[i-1];
+		prl_new[i] = prl_new[i-1];
+	}
+	prl_old[index] = old;
+	prl_new[index] = new;
+	prl_length++;
+}
+
+void wire_rename_list_insert(string old, string new, int index) {
+	int i;
+
+	for(i = wrl_length; i > index; i--) {
+		wrl_old[i] = wrl_old[i-1];
+		wrl_new[i] = wrl_new[i-1];
+	}
+	wrl_old[index] = old;
+	wrl_new[index] = new;
+	wrl_length++;
+}
+
+int part_rename_list_index(string name) {
+	int min_index;
+	int max_index;
+	int index = 0;
+
+	min_index = 0;
+	max_index = prl_length - 1;
+	while(min_index < max_index) {
+		index = (min_index + max_index) / 2;
+		if(name < prl_old[index]) {
+			max_index = index - 1;
+		} else if(name > prl_old[index]) {
+			min_index = index + 1;
+		} else { // name == prl_old[index]
+			return index;
+		}
+	}
+
+	index = min_index;
+	if(index < prl_length && name > prl_old[index]) {
+		index++;
+	}
+	return index;
+}
+
+int wire_rename_list_index(string name) {
+	int min_index;
+	int max_index;
+	int index = 0;
+
+	min_index = 0;
+	max_index = wrl_length - 1;
+	while(min_index < max_index) {
+		index = (min_index + max_index) / 2;
+		if(name < wrl_old[index]) {
+			max_index = index - 1;
+		} else if(name > wrl_old[index]) {
+			min_index = index + 1;
+		} else { // name == wrl_old[index]
+			return index;
+		}
+	}
+
+	index = min_index;
+	if(index < wrl_length && name > wrl_old[index]) {
+		index++;
+	}
+	return index;
+}
+
+// add new entry into sorted rename list
+// returns TRUE, if the new entry was already in the list
+int part_rename_list_add(string old, string new) {
+	int index;
+
+	index = part_rename_list_index(old);
+	if(old == prl_old[index]) {
+		return TRUE;
+	} else {
+		part_rename_list_insert(old, new, index);
+		return FALSE;
+	}
+}
+
+// add new entry into sorted rename list
+// returns TRUE, if the new entry was already in the list
+int wire_rename_list_add(string old, string new) {
+	int index;
+
+	index = wire_rename_list_index(old);
+	if(old == wrl_old[index]) {
+		return TRUE;
+	} else {
+		wire_rename_list_insert(old, new, index);
+		return FALSE;
+	}
+}
+
+string rename_part(string old) {
+	string name;
+	string new;
+	int i;
+	int number;
+
+	// search, if name is already renamed
+	i = part_rename_list_index(old);
+	if(old == prl_old[i]) {
+		return prl_new[i];
+	}
+
+	// split name
+	split_name(old);
+	name = sn_name;
+	number = sn_number;
+
+	if(part_list_add(name, number)) {
+		// name already exists => search free number
+		number = 1;
+		i = part_list_index(name, number);
+		while(name == pl_name[i] && number == pl_number[i]) {
+			i++;
+			number++;
+		}
+		part_list_add(name, number);
+	}
+
+	if(number > 0) {
+		sprintf(new, "%s%d", name, number);
+	} else {
+		new = name;
+	}
+	part_rename_list_add(old, new);
+
+	return new;
+}
+
+string rename_wire(string old) {
+	string name;
+	string new;
+	int i;
+	int number;
+
+	// only check wires (not parts) for common signals
+	if(is_common_signal(old)) {
+		return old;
+	}
+
+	// search, if name is already renamed
+	i = wire_rename_list_index(old);
+	if(old == wrl_old[i]) {
+		return wrl_new[i];
+	}
+
+	// split name
+	split_name(old);
+	name = sn_name;
+	number = sn_number;
+
+	if(wire_list_add(name, number)) {
+		// name already exists => search free number
+		number = 1;
+		i = wire_list_index(name, number);
+		while(name == wl_name[i] && number == wl_number[i]) {
+			i++;
+			number++;
+		}
+		wire_list_add(name, number);
+	}
+
+	if(number > 0) {
+		sprintf(new, "%s%d", name, number);
+	} else {
+		new = name;
+	}
+	wire_rename_list_add(old, new);
+
+	return new;
+}
+
+string rename_bus(string old) {
+	string part[];
+	string subpart[];
+	string synonym_and_names[];
+	string synonym;
+	string names;
+	int i;
+	int j;
+	int n;
+	int m;
+
+	if(strsplit(synonym_and_names, old, ':') > 1) {
+		synonym = rename_wire(synonym_and_names[0]);
+		names = synonym_and_names[1];
+	} else {
+		synonym = "";
+		names = synonym_and_names[0];
+	}
+
+	// Example:
+	// old = "B$1:N$1,ADR[2..4],+V"
+	// synonym = "B$1"
+	// names = "N$1,ADR[2..4],+V"
+
+	n = strsplit(part, names, ',');
+	for(i = 0; i < n; i++) {
+		m = strsplit(subpart, split_name_list(part[i]), ',');
+		for(j = 0; j < m; j++) {
+			subpart[j] = rename_wire(subpart[j]);
+		}
+		part[i] = strjoin(subpart, ',');
+	}
+	names = join_name_list(strjoin(part, ','));
+
+	if(synonym != "") {
+		names = synonym + ":" + names;
+	}
+	return names;
+}
+
+string get_command(string line) {
+	int pos = strchr(line, ' ');
+	if(pos > 0) {
+		return strsub(line, 0, pos);
+	} else {
+		return line;
+	}
+}
+
+string replace_name(string line) {
+	string parts[];
+	string subparts[];
+	string subsubparts[];
+	string command;
+	int n_parts;
+	int i;
+	int is_part;
+
+	command = get_command(line);
+
+	if(command != "text" && command != "value") {
+		n_parts = strsplit(parts, line, '\'');
+		if(n_parts > 2) {
+			is_part = command == "add" || command == "invoke" ||
+					command == "move" || command == "rotate" ||
+					command == "smash";
+			for(i = 1; i < n_parts; i+=2) {
+				strsplit(subparts, parts[i], '>');
+				strsplit(subsubparts, subparts[0], ' ');
+				if(command == "bus") {
+					subsubparts[0] = rename_bus(subsubparts[0]);
+				} else if(is_part) {
+					subsubparts[0] = rename_part(subsubparts[0]);
+				} else if(command == "attribute") {
+					if(i == 1 && subsubparts[0] != "*") {
+						subsubparts[0] = rename_part(subsubparts[0]);
+					}
+				} else {
+					subsubparts[0] = rename_wire(subsubparts[0]);
+				}
+				subparts[0] = strrm(strjoin(subsubparts, ' '), ' ');
+				parts[i] = strjoin(subparts, '>');
+			}
+			line = strjoin(parts, '\'');
+		}
+	}
+
+	return line;
+}
+
+string replace_sheet_number(string line) {
+	int s;
+
+	if(strsub(line, 0, 7) == "edit .s") {
+		s = strtol(strsub(line, 7));
+		if(s > 0) {
+			s += sheet_offset;
+			sprintf(line, "edit .s%d", s);
+		}
+	}
+
+	return line;
+}
+
+int is_sheet_used(UL_SHEET s) {
+	s.busses(b) return TRUE;
+	s.nets(n) return TRUE;
+	s.parts(p) return TRUE;
+	s.circles(c) return TRUE;
+	s.frames(f) return TRUE;
+	s.polygons(p) return TRUE;
+	s.rectangles(r) return TRUE;
+	s.texts(t) return TRUE;
+	s.wires(w) return TRUE;
+	return FALSE;
+}
+
+int get_max_sheet_number() {
+	int max_sheet_number = 0;
+
+	project.schematic(sch) {
+		sch.sheets(s) {
+			if(is_sheet_used(s) && max_sheet_number < s.number) {
+				max_sheet_number = s.number;
+			}
+		}
+	}
+
+	return max_sheet_number;
+}
+
+
+string lines_board[];
+string lines_schematic[];
+string name;
+
+int nLines_board;
+int nLines_schematic;
+int i;
+
+if(append_sheets) {
+	sheet_offset = get_max_sheet_number();
+}
+
+nLines_schematic = fileread(lines_schematic, schematic_filename);
+nLines_board = fileread(lines_board, board_filename);
+
+project.schematic(sch) {
+	sch.sheets(s) {
+		s.parts(p) {
+			add_part(p.name);
+		}
+		s.nets(n) {
+			add_wire(n.name);
+		}
+		s.busses(b) {
+			add_bus_names(b.name);
+		}
+	}
+}
+
+project.board(b) {
+	b.elements(e) {
+		add_part(e.name);
+	}
+
+	b.signals(s) {
+		add_wire(s.name);
+	}
+}
+
+output(paste_script) {
+	for(i = 0; i < nLines_schematic; i++) {
+		printf("%s\n", replace_sheet_number(replace_name(lines_schematic[i])));
+	}
+
+	for(i = 0; i < nLines_board; i++) {
+		printf("%s\n", replace_sheet_number(replace_name(lines_board[i])));
+	}
+
+	if(run_ratsnest) {
+		printf("ratsnest\n");
+	}
+
+	if(run_erc) {
+		printf("erc\n");
+	}
+}
+
+if(include_rename_list || debug) {
+	output(copypaste_info) {
+		if(debug) {
+			part_list_print("");
+			wire_list_print("");
+		}
+		part_rename_list_print("");
+		wire_rename_list_print("");
+	}
+}
+
+exit("script " + paste_script);

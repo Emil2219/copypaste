@@ -1,0 +1,336 @@
+// Copyright (c) 2009-2011, Benjamin Drung <benjamin.drung@gmail.com>
+//
+// copypaste_functions.ulp - common functions for copy and paste ULP
+//
+// Permission to use, copy, modify, and/or distribute this software for any
+// purpose with or without fee is hereby granted, provided that the above
+// copyright notice and this permission notice appear in all copies.
+//
+// THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+// WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+// MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+// ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+// WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+// ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+// OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+#require 5.10
+
+// part list structure
+string pl_name[];
+int pl_number[];
+int pl_names = 0;
+
+// wire list structure
+string wl_name[];
+int wl_number[];
+int wl_names = 0;
+
+// Split name into name and number
+string sn_name;
+int sn_number;
+void split_name(string name) {
+	int pos;
+
+	pos = strlen(name) - 1;
+	while(pos >= 0 && isdigit(name[pos])) {
+		pos--;
+	}
+
+	sn_name = strsub(name, 0, pos+1);
+	sn_number = strtol(strsub(name, pos+1));
+	if(sn_number == 0 && !isdigit(name[strlen(name)-1])) {
+		sn_number = -1;
+	}
+}
+
+// replaces all characters a with character b in string s.
+string strreplace(string s, char a, char b) {
+	string splitted[];
+	strsplit(splitted, s, a);
+	return strjoin(splitted, b);
+}
+
+// removes all characters c from string s.
+string strrm(string s, char c) {
+	string splitted[];
+	string result = "";
+	int i;
+	int n;
+
+	n = strsplit(splitted, s, c);
+	for(i = 0; i < n; i++) result += splitted[i];
+	return result;
+}
+
+void part_list_print(string pre) {
+	int i;
+	int j;
+
+	printf("%spart list (%d):\n", pre, pl_names);
+	for(i = 0; i < pl_names; i++) {
+		if(pl_number[i] >= 0) {
+			printf("%s%s%d\n", pre, pl_name[i], pl_number[i]);
+		} else {
+			printf("%s%s\n", pre, pl_name[i]);
+		}
+	}
+}
+
+void wire_list_print(string pre) {
+	int i;
+	int j;
+
+	printf("%swire list (%d):\n", pre, wl_names);
+	for(i = 0; i < wl_names; i++) {
+		if(wl_number[i] >= 0) {
+			printf("%s%s%d\n", pre, wl_name[i], wl_number[i]);
+		} else {
+			printf("%s%s\n", pre, wl_name[i]);
+		}
+	}
+}
+
+void part_list_insert(string name, int number, int index) {
+	int i;
+
+	for(i = pl_names; i > index; i--) {
+		pl_name[i] = pl_name[i-1];
+		pl_number[i] = pl_number[i-1];
+	}
+	pl_name[index] = name;
+	pl_number[index] = number;
+	pl_names++;
+}
+
+void wire_list_insert(string name, int number, int index) {
+	int i;
+
+	for(i = wl_names; i > index; i--) {
+		wl_name[i] = wl_name[i-1];
+		wl_number[i] = wl_number[i-1];
+	}
+	wl_name[index] = name;
+	wl_number[index] = number;
+	wl_names++;
+}
+
+int part_list_index(string name, int number) {
+	int min_index;
+	int max_index;
+	int index;
+
+	min_index = 0;
+	max_index = pl_names - 1;
+	while(min_index < max_index) {
+		index = (min_index + max_index) / 2;
+		if(name < pl_name[index]) {
+			max_index = index - 1;
+		} else if(name > pl_name[index]) {
+			min_index = index + 1;
+		} else { // name == pl_name[index]
+			if(number < pl_number[index]) {
+				max_index = index - 1;
+			} else if(number > pl_number[index]) {
+				min_index = index + 1;
+			} else { // number == pl_number[index]
+				return index;
+			}
+		}
+	}
+
+	index = min_index;
+	if(index < pl_names && (name > pl_name[index] ||
+			(name == pl_name[index] && number > pl_number[index]))) {
+		index++;
+	}
+	return index;
+}
+
+int wire_list_index(string name, int number) {
+	int min_index;
+	int max_index;
+	int index;
+
+	min_index = 0;
+	max_index = wl_names - 1;
+	while(min_index < max_index) {
+		index = (min_index + max_index) / 2;
+		if(name < wl_name[index]) {
+			max_index = index - 1;
+		} else if(name > wl_name[index]) {
+			min_index = index + 1;
+		} else { // name == wl_name[index]
+			if(number < wl_number[index]) {
+				max_index = index - 1;
+			} else if(number > wl_number[index]) {
+				min_index = index + 1;
+			} else { // number == wl_number[index]
+				return index;
+			}
+		}
+	}
+
+	index = min_index;
+	if(index < wl_names && (name > wl_name[index] ||
+			(name == wl_name[index] && number > wl_number[index]))) {
+		index++;
+	}
+	return index;
+}
+
+// add new entry into sorted name list
+// returns TRUE, if the new entry was already in the list
+int part_list_add(string name, int number) {
+	int index;
+
+	index = part_list_index(name, number);
+	if(name == pl_name[index] && number == pl_number[index]) {
+		return TRUE;
+	} else {
+		part_list_insert(name, number, index);
+		return FALSE;
+	}
+}
+
+// add new entry into sorted name list
+// returns TRUE, if the new entry was already in the list
+int wire_list_add(string name, int number) {
+	int index;
+
+	index = wire_list_index(name, number);
+	if(name == wl_name[index] && number == wl_number[index]) {
+		return TRUE;
+	} else {
+		wire_list_insert(name, number, index);
+		return FALSE;
+	}
+}
+
+int add_part(string name) {
+	split_name(name);
+	return part_list_add(sn_name, sn_number);
+}
+
+int add_wire(string name) {
+	split_name(name);
+	return wire_list_add(sn_name, sn_number);
+}
+
+// Example: split_name_list("A[2..4]") = "A2,A3,A4"
+string split_name_list(string name_list) {
+	string name;
+	string indices;
+	string list[];
+	int i;
+	int j;
+	int start;
+	int end;
+
+	i = strchr(name_list, '[');
+	j = strrchr(name_list, ']');
+	if(i >= 0 && j >= 0) {
+		name = strsub(name_list, 0, i);
+		indices = strsub(name_list, i+1, j-(i+1));
+		i = strchr(indices, '.');
+		j = strrchr(indices, '.');
+		if(i >= 0 && j >= 0 && i < j) {
+			start = strtol(strsub(indices, 0, i));
+			end = strtol(strsub(indices, j+1));
+			for(i = start; i <= end; i++) {
+				sprintf(list[i-start], "%s%d", name, i);
+			}
+			name_list = strjoin(list, ',');
+		}
+	}
+
+	return name_list;
+}
+
+// Example: join_name_list("N$1,B2,B3,B4,A") = "A,B[2..4],N$1"
+string join_name_list(string name_list) {
+	string old_list[];
+	string new_list[];
+	string name;
+	int n_old;
+	int n_new = 0;
+	int start;
+	int end;
+
+	string indices;
+	int i;
+	int j;
+
+	n_old = strsplit(old_list, name_list, ',');
+	sort(n_old, old_list);
+	for(i = 0; i < n_old; i++) {
+		split_name(old_list[i]);
+		// Name[LowestIndex..HighestIndex]
+		// In Eagle 5.3 HighestIndex must be lower than 256
+		if(sn_name == name && sn_number == end + 1 &&
+				start >= 0 && sn_number < 256) {
+			end++;
+		} else {
+			if(name != "") {
+				if(start == end) {
+					new_list[n_new] = old_list[i-1];
+				} else {
+					sprintf(new_list[n_new], "%s[%d..%d]", name, start, end);
+				}
+				n_new++;
+			}
+			name = sn_name;
+			start = sn_number;
+			end = sn_number;
+		}
+	}
+
+	if(name != "") {
+		if(start == end) {
+			new_list[n_new] = old_list[n_old-1];
+		} else {
+			sprintf(new_list[n_new], "%s[%d..%d]", name, start, end);
+		}
+		n_new++;
+	}
+
+	return strjoin(new_list, ',');
+}
+
+void add_bus_names(string name) {
+	string part[];
+	string subpart[];
+	string subsubpart[];
+	int i;
+	int j;
+	int k;
+	int n;
+	int m;
+	int o;
+
+	n = strsplit(part, name, ':');
+	for(i = 0; i < n; i++) {
+		m = strsplit(subpart, part[i], ',');
+		for(j = 0; j < m; j++) {
+			subpart[j] = split_name_list(subpart[j]);
+			o = strsplit(subsubpart, subpart[j], ',');
+			for(k = 0; k < o; k++) {
+				add_wire(subsubpart[k]);
+			}
+		}
+	}
+}
+
+int is_common_signal(string name) {
+	int i;
+	int result = FALSE;
+
+	for(i = 0; i < n_common_signal; i++) {
+		if(name == common_signal[i]) {
+			result = TRUE;
+			break;
+		}
+	}
+
+	return result;
+}
