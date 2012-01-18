@@ -5,6 +5,12 @@ assign c+f 'run paste'
 assign a+c 'run copy'
 assign a+v 'run paste'
 
+Configuration
+=============
+
+You can adjust the behavior of copypaste by editing the variable in the
+copypaste_config.ulp file.
+
 Restrictions
 ============
 
