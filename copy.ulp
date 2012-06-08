@@ -535,6 +535,11 @@ output(schematic_filename) {
 	printf("grid last\n");
 }
 
+if(fileerror()) {
+	dlgMessageBox(";Please make sure that the variable <b>basedir</b> specified in <i>copypaste_config.ulp</i> is set to an user-writable directory.");
+	exit(1);
+}
+
 output(board_filename) {
 	printf("edit .brd\n");
 	printf("set wire_bend 2\n");
