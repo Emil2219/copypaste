@@ -434,4 +434,4 @@ if(include_rename_list || debug) {
 	}
 }
 
-exit("script " + paste_script);
+exit("script '" + paste_script + "'");
