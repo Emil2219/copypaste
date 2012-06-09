@@ -1,4 +1,28 @@
-Add to the beginning to eagle.scr:
+Description
+===========
+
+copypaste allows you to copy a schematic and a corresponding board without
+loosing the placement of the elements on the board. You can copy a schematic
+and board from a newer version of EAGLE to an older version of EAGLE. The
+copy ULP creates one script for the schematic and one for the board that creates
+and places all elements of the source. These scripts are stored as
+clipboard_schematic.scr and clipboard_board.scr. The paste ULP combines the
+clipboard scripts, renames the elements with conflicting names, and stores the
+result as paste.scr. The paste script is then executed.
+
+Usage
+=====
+
+To copy a schematic and board, open the source schematic or board and run the
+copy ULP by either typing 'run copy' or pressing the copy shortcut. Then open
+the target schematic or board. You may set a mark in the schematic or board to
+use a different paste position than the origin. Then run the paste ULP by either
+typing 'run paste' or pressing the paste shortcut.
+
+Shortcuts
+=========
+
+Add to the beginning of eagle.scr:
 
 assign c+d 'run copy'
 assign c+f 'run paste'
