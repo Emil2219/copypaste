@@ -1,9 +1,10 @@
+VERSION := 2
 ULP_SCRIPTS := $(wildcard *.ulp)
 DIST := $(ULP_SCRIPTS) AUTHORS COPYING Makefile README.txt
 
 all:
 
-dist: copypaste.zip
+dist: copypaste-v$(VERSION).zip
 
 %.tar.bz2: $(DIST)
 	tar -c --exclude-vcs --transform="s@^@$*/@" $^ | bzip2 -cz9 > $@
