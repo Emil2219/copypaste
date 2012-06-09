@@ -47,6 +47,12 @@ Restrictions
   of Eagle 5.3 Professional).
 * Attributes won't be copied (ul_part, ul_element).
 
+Bugs
+====
+
+Please report bugs to the author(s) (see AUTHORS file) and provide the smallest
+possible test case which triggers your bug.
+
 Notice to programming style / Limits of the User Language
 =========================================================
 
