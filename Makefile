@@ -1,4 +1,4 @@
-VERSION := 2
+VERSION := 3
 ULP_SCRIPTS := $(wildcard *.ulp)
 DIST := $(ULP_SCRIPTS) AUTHORS COPYING Makefile README.txt
 
