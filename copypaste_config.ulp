@@ -52,7 +52,7 @@ int append_sheets = TRUE;
 int copy_relative_to_lower_left_corner = FALSE;
 
 // debug modus (prints informations into copypaste info file)
-int debug = TRUE;
+int debug = FALSE;
 
 // include list of renamed elements in copypaste info file
 int include_rename_list = FALSE;
