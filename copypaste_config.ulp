@@ -62,3 +62,8 @@ int run_erc = FALSE;
 
 // run ratsnest before finishing paste script
 int run_ratsnest = TRUE;
+
+// The warning message about a part not having a user definable value is
+// disabled while the paste script is running. Specify whether this warning
+// message should be enabled after running the paste script or not.
+int enable_PartHasNoUserDefinableValue_warning = TRUE;

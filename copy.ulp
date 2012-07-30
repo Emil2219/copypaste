@@ -318,8 +318,8 @@ void copy_instance(string sheet_name, UL_PART p, UL_INSTANCE i) {
 	printf(" '%s' %s %s %s\n", p.name, i.gate.name,
 			orientation(i.angle, i.mirror, FALSE, FALSE), pos(i.x, i.y));
 
-	if(p.device.value == "On" && i.value != "") {
-		printf("value '%s' %s\n", i.value, pos(i.x, i.y));
+	if(p.device.value == "On" || i.value != p.device.name) {
+		printf("value '%s' '%s'\n", p.name, i.value);
 	}
 
 	if(i.smashed) {
@@ -466,6 +466,7 @@ output(schematic_filename) {
 
 	printf("edit .brd\n");
 	printf("edit .sch\n");
+	printf("set Warning.PartHasNoUserDefinableValue 0\n");
 	printf("set wire_bend 2\n");
 	printf("grid mm\n");
 
@@ -531,6 +532,9 @@ output(schematic_filename) {
 		}
 	}
 
+	if(enable_PartHasNoUserDefinableValue_warning) {
+		printf("set Warning.PartHasNoUserDefinableValue 1\n");
+	}
 	printf("window fit\n");
 	printf("grid last\n");
 }

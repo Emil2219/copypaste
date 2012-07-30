@@ -294,12 +294,12 @@ string replace_name(string line) {
 
 	command = get_command(line);
 
-	if(command != "text" && command != "value") {
+	if(command != "text") {
 		n_parts = strsplit(parts, line, '\'');
 		if(n_parts > 2) {
 			is_part = command == "add" || command == "invoke" ||
 					command == "move" || command == "rotate" ||
-					command == "smash";
+					command == "smash" || command == "value";
 			for(i = 1; i < n_parts; i+=2) {
 				strsplit(subparts, parts[i], '>');
 				strsplit(subsubparts, subparts[0], ' ');
@@ -316,6 +316,11 @@ string replace_name(string line) {
 				}
 				subparts[0] = strrm(strjoin(subsubparts, ' '), ' ');
 				parts[i] = strjoin(subparts, '>');
+				if(command == "value") {
+					// The third part of the value command is the new value
+					// and should not be changed.
+					break;
+				}
 			}
 			line = strjoin(parts, '\'');
 		}
