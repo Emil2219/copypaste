@@ -35,6 +35,21 @@ Configuration
 You can adjust the behavior of copypaste by editing the variable in the
 copypaste_config.ulp file.
 
+Copying between different Eagle versions/installations
+======================================================
+
+The copy ULP creates two clipboard files (clipboard_schematic.scr and
+clipboard_board.scr). The paste ULP uses these clipboard files as source. The
+clipboard files are stored in the scripts directory of your Eagle installation
+by default. The directories of your source and destination will differ if you
+try to copy a board and schematic from one Eagle version/installation to
+another. You have to configure one common directory for the clipboard files in
+all versions/installations by editing the copypaste_config.ulp file. Change the
+basedir variable from path_scr[0] to a user writable directory. If you want to
+use C:\EagleClipboard as clipboard directory, the line would look like that:
+
+string basedir = "C:\EagleClipboard";
+
 Restrictions
 ============
 
