@@ -1,5 +1,10 @@
 VERSION := 3
-ULP_SCRIPTS := $(wildcard *.ulp)
+ULP_SCRIPTS := \
+	copy.ulp \
+	copypaste_config.ulp \
+	copypaste_functions.ulp \
+	paste.ulp \
+	$(NULL)
 DIST := $(ULP_SCRIPTS) AUTHORS COPYING Makefile README.txt
 
 all:
