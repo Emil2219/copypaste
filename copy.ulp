@@ -1,4 +1,4 @@
-// Copyright (c) 2009-2012, Benjamin Drung <benjamin.drung@gmail.com>
+// Copyright (c) 2009-2013, Benjamin Drung <benjamin.drung@gmail.com>
 //
 // copy.ulp - copies schematic and board into clipboard script files
 //
@@ -383,6 +383,9 @@ void copy_polygon(UL_POLYGON p, string name) {
 	printf("polygon %s%f", name, u2mm(p.width));
 	p.wires(w) {
 		printf(" %s", pos(w.x1, w.y1));
+		if(w.arc) {
+			printf(" %+f", w.curve);
+		}
 		position = pos(w.x2, w.y2);
 	}
 	printf(" %s\n", position);
