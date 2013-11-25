@@ -7,6 +7,11 @@ ULP_SCRIPTS := \
 	$(NULL)
 DIST := $(ULP_SCRIPTS) AUTHORS COPYING Makefile README.txt
 
+define \n
+
+
+endef
+
 all:
 
 dist: copypaste-v$(VERSION).zip
@@ -23,7 +28,7 @@ dist: copypaste-v$(VERSION).zip
 %.zip: $(DIST)
 	rm -rf $*
 	mkdir $*
-	cp $^ $*
+	$(foreach textfile,$^,unix2dos -n $(textfile) $*/$(textfile)$(\n))
 	zip -9 -r -q $@ $*
 	rm -rf $*
 
