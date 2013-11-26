@@ -1,4 +1,4 @@
-// Copyright (c) 2009-2011, Benjamin Drung <benjamin.drung@gmail.com>
+// Copyright (c) 2009-2013, Benjamin Drung <benjamin.drung@gmail.com>
 //
 // copypaste_functions.ulp - common functions for copy and paste ULP
 //
@@ -15,6 +15,10 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #require 5.10
+
+// layer list structure
+int ll_number[];
+int ll_length = 0;
 
 // part list structure
 string pl_name[];
@@ -91,6 +95,16 @@ void wire_list_print(string pre) {
 	}
 }
 
+void layer_list_insert(int number, int index) {
+	int i;
+
+	for(i = ll_length; i > index; i--) {
+		ll_number[i] = ll_number[i-1];
+	}
+	ll_number[index] = number;
+	ll_length++;
+}
+
 void part_list_insert(string name, int number, int index) {
 	int i;
 
@@ -113,6 +127,31 @@ void wire_list_insert(string name, int number, int index) {
 	wl_name[index] = name;
 	wl_number[index] = number;
 	wl_names++;
+}
+
+int layer_list_index(int number) {
+	int min_index;
+	int max_index;
+	int index;
+
+	min_index = 0;
+	max_index = ll_length - 1;
+	while(min_index < max_index) {
+		index = (min_index + max_index) / 2;
+		if(number < ll_number[index]) {
+			max_index = index - 1;
+		} else if(number > ll_number[index]) {
+			min_index = index + 1;
+		} else { // number == ll_number[index]
+			return index;
+		}
+	}
+
+	index = min_index;
+	if(index < ll_length && number > ll_number[index]) {
+		index++;
+	}
+	return index;
 }
 
 int part_list_index(string name, int number) {
@@ -177,6 +216,20 @@ int wire_list_index(string name, int number) {
 		index++;
 	}
 	return index;
+}
+
+// add new entry into sorted layer list
+// returns TRUE, if the new entry was already in the list
+int layer_list_add(int number) {
+	int index;
+
+	index = layer_list_index(number);
+	if(number == ll_number[index]) {
+		return TRUE;
+	} else {
+		layer_list_insert(number, index);
+		return FALSE;
+	}
 }
 
 // add new entry into sorted name list

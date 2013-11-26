@@ -1,4 +1,4 @@
-// Copyright (c) 2009-2012, Benjamin Drung <benjamin.drung@gmail.com>
+// Copyright (c) 2009-2013, Benjamin Drung <benjamin.drung@gmail.com>
 //
 // paste.ulp - pastes clipboard script files into schematic and board
 //
@@ -325,6 +325,15 @@ string replace_name(string line) {
 			line = strjoin(parts, '\'');
 		}
 	}
+	line += "\n";
+
+	// Do not create layers that are already present.
+	if(command == "layer") {
+		n_parts = strsplit(parts, line, ' ');
+		if(n_parts >= 2 && layer_list_add(strtol(parts[1]))) {
+			line = "";
+		}
+	}
 
 	return line;
 }
@@ -336,7 +345,7 @@ string replace_sheet_number(string line) {
 		s = strtol(strsub(line, 7));
 		if(s > 0) {
 			s += sheet_offset;
-			sprintf(line, "edit .s%d", s);
+			sprintf(line, "edit .s%d\n", s);
 		}
 	}
 
@@ -405,6 +414,10 @@ project.board(b) {
 		add_part(e.name);
 	}
 
+	b.layers(l) {
+		layer_list_add(l.number);
+	}
+
 	b.signals(s) {
 		add_wire(s.name);
 	}
@@ -412,11 +425,11 @@ project.board(b) {
 
 output(paste_script) {
 	for(i = 0; i < nLines_schematic; i++) {
-		printf("%s\n", replace_sheet_number(replace_name(lines_schematic[i])));
+		printf("%s", replace_sheet_number(replace_name(lines_schematic[i])));
 	}
 
 	for(i = 0; i < nLines_board; i++) {
-		printf("%s\n", replace_sheet_number(replace_name(lines_board[i])));
+		printf("%s", replace_sheet_number(replace_name(lines_board[i])));
 	}
 
 	if(run_ratsnest) {

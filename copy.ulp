@@ -562,7 +562,7 @@ output(board_filename) {
 			// Copy user defined layers (number >= 100) to the new board
 			// if they are used.
 			if(l.number >= 100 && l.used) {
-				printf("layer %d %s\n", l.number,
+				printf("layer %d %s; ", l.number,
 						strreplace(l.name, ' ', '_'));
 				printf("set color_layer %d %d\n", l.number, l.color);
 			}
