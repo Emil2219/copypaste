@@ -543,7 +543,9 @@ output(schematic_filename) {
 }
 
 if(fileerror()) {
-    dlgMessageBox(";Please make sure that the variable <b>basedir</b> specified in <i>copypaste_config.ulp</i> is set to an user-writable directory.");
+    dlgMessageBox(";Please make sure that the variable <b>basedir</b> "
+                  "specified in <i>copypaste_config.ulp</i> is set "
+                  "to an user-writable directory.");
     exit(1);
 }
 
