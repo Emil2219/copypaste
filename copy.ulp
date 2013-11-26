@@ -30,599 +30,598 @@ int ppl_connections[];
 int ppl_length = 0;
 
 void pin_point_list_print(string pre) {
-	int i;
-	int j;
+    int i;
+    int j;
 
-	printf("%spin point list (%d):\n", pre, ppl_length);
-	for(i = 0; i < ppl_length; i++) {
-		printf("%s%s\t%d\n", pre, ppl_point[i], ppl_connections[i]);
-	}
+    printf("%spin point list (%d):\n", pre, ppl_length);
+    for(i = 0; i < ppl_length; i++) {
+        printf("%s%s\t%d\n", pre, ppl_point[i], ppl_connections[i]);
+    }
 }
 
 void pin_point_list_insert(string point, int connections, int index) {
-	int i;
+    int i;
 
-	for(i = ppl_length; i > index; i--) {
-		ppl_point[i] = ppl_point[i-1];
-		ppl_connections[i] = ppl_connections[i-1];
-	}
-	ppl_point[index] = point;
-	ppl_connections[index] = connections;
-	ppl_length++;
+    for(i = ppl_length; i > index; i--) {
+        ppl_point[i] = ppl_point[i-1];
+        ppl_connections[i] = ppl_connections[i-1];
+    }
+    ppl_point[index] = point;
+    ppl_connections[index] = connections;
+    ppl_length++;
 }
 
 int pin_point_list_index(string point) {
-	int min_index;
-	int max_index;
-	int index;
+    int min_index;
+    int max_index;
+    int index;
 
-	min_index = 0;
-	max_index = ppl_length - 1;
-	while(min_index < max_index) {
-		index = (min_index + max_index) / 2;
-		if(point < ppl_point[index]) {
-			max_index = index - 1;
-		} else if(point > ppl_point[index]) {
-			min_index = index + 1;
-		} else { // point == ppl_point[index]
-			return index;
-		}
-	}
+    min_index = 0;
+    max_index = ppl_length - 1;
+    while(min_index < max_index) {
+        index = (min_index + max_index) / 2;
+        if(point < ppl_point[index]) {
+            max_index = index - 1;
+        } else if(point > ppl_point[index]) {
+            min_index = index + 1;
+        } else { // point == ppl_point[index]
+            return index;
+        }
+    }
 
-	index = min_index;
-	if(index < ppl_length && point > ppl_point[index]) {
-		index++;
-	}
-	return index;
+    index = min_index;
+    if(index < ppl_length && point > ppl_point[index]) {
+        index++;
+    }
+    return index;
 }
 
 // add pin point into sorted pin point list
 // returns number of the added point
 int pin_point_list_add(string point) {
-	int index;
+    int index;
 
-	index = pin_point_list_index(point);
-	if(point == ppl_point[index]) {
-		ppl_connections[index]++;
-	} else {
-		pin_point_list_insert(point, 1, index);
-	}
+    index = pin_point_list_index(point);
+    if(point == ppl_point[index]) {
+        ppl_connections[index]++;
+    } else {
+        pin_point_list_insert(point, 1, index);
+    }
 
-	return ppl_connections[index];
+    return ppl_connections[index];
 }
 
 int orphans = 2;
 void change_orphans(int value) {
-	if(orphans != value) {
-		orphans = value;
-		printf("change orphans %s\n", boolean[value]);
-	}
+    if(orphans != value) {
+        orphans = value;
+        printf("change orphans %s\n", boolean[value]);
+    }
 }
 
 int thermals = 2;
 void change_thermals(int value) {
-	if(thermals != value) {
-		thermals = value;
-		printf("change thermals %s\n", boolean[value]);
-	}
+    if(thermals != value) {
+        thermals = value;
+        printf("change thermals %s\n", boolean[value]);
+    }
 }
 
 int layer = -1;
 void change_layer(int value) {
-	if(layer != value) {
-		layer = value;
-		printf("change layer %d\n", value);
-	}
+    if(layer != value) {
+        layer = value;
+        printf("change layer %d\n", value);
+    }
 }
 
 int rank = -1;
 void change_rank(int value) {
-	if(rank != value) {
-		rank = value;
-		printf("change rank %d\n", value);
-	}
+    if(rank != value) {
+        rank = value;
+        printf("change rank %d\n", value);
+    }
 }
 
 int ratio = -1;
 void change_ratio(int value) {
-	if(ratio != value) {
-		ratio = value;
-		printf("change ratio %d\n", value);
-	}
+    if(ratio != value) {
+        ratio = value;
+        printf("change ratio %d\n", value);
+    }
 }
 
 int drill = -1;
 void change_drill(int value) {
-	if(drill != value) {
-		drill = value;
-		printf("change drill %f\n", u2mm(value));
-	}
+    if(drill != value) {
+        drill = value;
+        printf("change drill %f\n", u2mm(value));
+    }
 }
 
 int isolate = -1;
 void change_isolate(int value) {
-	if(isolate != value) {
-		isolate = value;
-		printf("change isolate %f\n", u2mm(value));
-	}
+    if(isolate != value) {
+        isolate = value;
+        printf("change isolate %f\n", u2mm(value));
+    }
 }
 
 int size = -1;
 void change_size(int value) {
-	if(size != value) {
-		size = value;
-		printf("change size %f\n", u2mm(value));
-	}
+    if(size != value) {
+        size = value;
+        printf("change size %f\n", u2mm(value));
+    }
 }
 
 int spacing = -1;
 void change_spacing(int value) {
-	if(spacing != value) {
-		spacing = value;
-		printf("change spacing %f\n", u2mm(value));
-	}
+    if(spacing != value) {
+        spacing = value;
+        printf("change spacing %f\n", u2mm(value));
+    }
 }
 
 string caps[] = {"flat", "round"};
 int cap = -1;
 void change_cap(int value) {
-	if(cap != value) {
-		cap = value;
-		printf("change cap %s\n", caps[value]);
-	}
+    if(cap != value) {
+        cap = value;
+        printf("change cap %s\n", caps[value]);
+    }
 }
 
 string displays[] = {"off", "value", "name", "both"};
 int display = -1;
 void change_display(int value) {
-	if(display != value) {
-		display = value;
-		printf("change display %s\n", displays[value]);
-	}
+    if(display != value) {
+        display = value;
+        printf("change display %s\n", displays[value]);
+    }
 }
 
 string fonts[] = {"vector", "proportional", "fixed"};
 int font = -1;
 void change_font(int value) {
-	if(font != value) {
-		font = value;
-		printf("change font %s\n", fonts[value]);
-	}
+    if(font != value) {
+        font = value;
+        printf("change font %s\n", fonts[value]);
+    }
 }
 
 string pours[] = {"solid", "hatch"};
 int pour = -1;
 void change_pour(int value) {
-	if(pour != value) {
-		pour = value;
-		printf("change pour %s\n", pours[value]);
-	}
+    if(pour != value) {
+        pour = value;
+        printf("change pour %s\n", pours[value]);
+    }
 }
 
 string styles[] = {"continuous", "longdash", "shortdash", "dashdot"};
 int style = -1;
 void change_style(int value) {
-	if(style != value) {
-		style = value;
-		printf("change style %s\n", styles[value]);
-	}
+    if(style != value) {
+        style = value;
+        printf("change style %s\n", styles[value]);
+    }
 }
 
 string mirrors[] = {"", "m"};
 string spins[] = {"", "s"};
 string orientation(real angle, int mirror, int spin, int fixed) {
-	string result = "";
+    string result = "";
 
-	if(fixed) {
-		result += "=";
-	}
-	sprintf(result, "%s%s%sr%f", result, mirrors[mirror], spins[spin], angle);
-	return result;
+    if(fixed) {
+        result += "=";
+    }
+    sprintf(result, "%s%s%sr%f", result, mirrors[mirror], spins[spin], angle);
+    return result;
 }
 
 string pos(int x, int y) {
-	string result;
-	sprintf(result, "(r %f %f)", u2mm(x)+dx, u2mm(y)+dy);
-	return result;
+    string result;
+    sprintf(result, "(r %f %f)", u2mm(x)+dx, u2mm(y)+dy);
+    return result;
 }
 
 void change_text(UL_TEXT t, string name) {
-	printf("move '%s' %s\n", name, pos(t.x, t.y));
-	printf("rotate %s '%s'\n", orientation(t.angle, t.mirror, t.spin, TRUE),
-			name);
-	printf("change font %s %s\n", fonts[t.font], pos(t.x, t.y));
-	printf("change layer %d %s\n", t.layer, pos(t.x, t.y));
-	printf("change ratio %d %s\n", t.ratio, pos(t.x, t.y));
-	printf("change size %f %s\n", u2mm(t.size), pos(t.x, t.y));
+    printf("move '%s' %s\n", name, pos(t.x, t.y));
+    printf("rotate %s '%s'\n", orientation(t.angle, t.mirror, t.spin, TRUE),
+           name);
+    printf("change font %s %s\n", fonts[t.font], pos(t.x, t.y));
+    printf("change layer %d %s\n", t.layer, pos(t.x, t.y));
+    printf("change ratio %d %s\n", t.ratio, pos(t.x, t.y));
+    printf("change size %f %s\n", u2mm(t.size), pos(t.x, t.y));
 }
 
 void copy_attribute(string part_name, UL_ATTRIBUTE a) {
-	change_display(a.display);
-	printf("attribute '%s' %s '%s';\n", part_name, a.name, a.value);
+    change_display(a.display);
+    printf("attribute '%s' %s '%s';\n", part_name, a.name, a.value);
 }
 
 void copy_circle(UL_CIRCLE c) {
-	change_layer(c.layer);
-	printf("circle %f %s %s\n", u2mm(c.width),
-			pos(c.x, c.y), pos(c.x+c.radius, c.y));
+    change_layer(c.layer);
+    printf("circle %f %s %s\n", u2mm(c.width),
+           pos(c.x, c.y), pos(c.x+c.radius, c.y));
 }
 
 void copy_element(UL_ELEMENT e) {
-	string name;
+    string name;
 
-	printf("move '%s' %s\n", e.name, pos(e.x, e.y));
-	printf("rotate %s '%s'\n", orientation(e.angle, e.mirror, e.spin, TRUE),
-			e.name);
+    printf("move '%s' %s\n", e.name, pos(e.x, e.y));
+    printf("rotate %s '%s'\n", orientation(e.angle, e.mirror, e.spin, TRUE),
+           e.name);
 
-	if(e.locked) {
-		printf("lock '%s'\n", e.name);
-	}
+    if(e.locked) {
+        printf("lock '%s'\n", e.name);
+    }
 
-	if(e.smashed) {
-		printf("smash '%s'\n", e.name);
-	}
+    if(e.smashed) {
+        printf("smash '%s'\n", e.name);
+    }
 
-	e.texts(t) {
-		if(t.value == e.name) {
-			name = e.name + ">name";
-		} else if(t.value == e.value) {
-			name = e.name + ">value";
-		} else {
-			name = "";
-		}
-		if(name != "") {
-			change_text(t, name);
-		}
-	}
+    e.texts(t) {
+        if(t.value == e.name) {
+            name = e.name + ">name";
+        } else if(t.value == e.value) {
+            name = e.name + ">value";
+        } else {
+            name = "";
+        }
+        if(name != "") {
+            change_text(t, name);
+        }
+    }
 }
 
 void copy_frame(UL_FRAME f) {
-	string border = "";
-	
-	if(f.border & FRAME_BORDER_LEFT) {
-		border += " left";
-	}
-	if(f.border & FRAME_BORDER_TOP) {
-		border += " top";
-	}
-	if(f.border & FRAME_BORDER_RIGHT) {
-		border += " right";
-	}
-	if(f.border & FRAME_BORDER_BOTTOM) {
-		border += " bottom";
-	}
-	if(border == "") {
-		border = " none";
-	}
-	
-	change_layer(f.layer);
-	printf("frame %d %d%s %s %s\n", f.columns, f.rows, border, pos(f.x1, f.y1),
-			pos(f.x2, f.y2));
+    string border = "";
+
+    if(f.border & FRAME_BORDER_LEFT) {
+        border += " left";
+    }
+    if(f.border & FRAME_BORDER_TOP) {
+        border += " top";
+    }
+    if(f.border & FRAME_BORDER_RIGHT) {
+        border += " right";
+    }
+    if(f.border & FRAME_BORDER_BOTTOM) {
+        border += " bottom";
+    }
+    if(border == "") {
+        border = " none";
+    }
+
+    change_layer(f.layer);
+    printf("frame %d %d%s %s %s\n", f.columns, f.rows, border, pos(f.x1, f.y1),
+           pos(f.x2, f.y2));
 }
 
 void copy_hole(UL_HOLE h) {
-	change_drill(h.drill);
-	printf("hole %s\n", pos(h.x, h.y));
+    change_drill(h.drill);
+    printf("hole %s\n", pos(h.x, h.y));
 }
 
 void copy_instance(string sheet_name, UL_PART p, UL_INSTANCE i) {
-	string rename_list = "";
-	string name;
-	int number;
+    string rename_list = "";
+    string name;
+    int number;
 
-	if(add_part(p.name)) {
-		printf("invoke");
-	} else {
-		printf("add %s@%s", p.device.name, p.device.library);
-	}
-	printf(" '%s' %s %s %s\n", p.name, i.gate.name,
-			orientation(i.angle, i.mirror, FALSE, FALSE), pos(i.x, i.y));
+    if(add_part(p.name)) {
+        printf("invoke");
+    } else {
+        printf("add %s@%s", p.device.name, p.device.library);
+    }
+    printf(" '%s' %s %s %s\n", p.name, i.gate.name,
+           orientation(i.angle, i.mirror, FALSE, FALSE), pos(i.x, i.y));
 
-	if(p.device.value == "On" || i.value != p.device.name) {
-		printf("value '%s' '%s'\n", p.name, i.value);
-	}
+    if(p.device.value == "On" || i.value != p.device.name) {
+        printf("value '%s' '%s'\n", p.name, i.value);
+    }
 
-	if(i.smashed) {
-		printf("smash '%s %s'\n", p.name, i.gate.name);
-	}
+    if(i.smashed) {
+        printf("smash '%s %s'\n", p.name, i.gate.name);
+    }
 
-	i.texts(t) {
-		if(t.value == p.name) {
-			name = p.name + " " + i.gate.name + ">name";
-		} else if(t.value == i.value) {
-			name = p.name + " " + i.gate.name + ">value";
-		} else {
-			name = "";
-		}
-		if(name != "") {
-			change_text(t, name);
-		}
-	}
+    i.texts(t) {
+        if(t.value == p.name) {
+            name = p.name + " " + i.gate.name + ">name";
+        } else if(t.value == i.value) {
+            name = p.name + " " + i.gate.name + ">value";
+        } else {
+            name = "";
+        }
+        if(name != "") {
+            change_text(t, name);
+        }
+    }
 
-	i.gate.symbol.pins(pin) {
-		if(pin.net != "") {
-			split_name(pin.net);
-			name = sn_name;
-			number = sn_number;
-			wire_list_add(name, number);
+    i.gate.symbol.pins(pin) {
+        if(pin.net != "") {
+            split_name(pin.net);
+            name = sn_name;
+            number = sn_number;
+            wire_list_add(name, number);
 
-			if(pin_point_list_add(sheet_name + pos(pin.x, pin.y)) == 2) {
-				printf("junction %s\n", pos(pin.x, pin.y));
-				if(is_common_signal(pin.net)) {
-					printf("name '%s' %s\n", pin.net, pos(pin.x, pin.y));
-				} else {
-					printf("name '%s%s' %s\n", temporary_net_prefix,
-							pin.net, pos(pin.x, pin.y));
-					rename_list += "name '" + pin.net + "' " +
-							pos(pin.x, pin.y) + "\n";
-				}
-				rename_list += "delete " + pos(pin.x, pin.y) + "\n";
-			}
-		}
-	}
-	printf("%s", rename_list);
+            if(pin_point_list_add(sheet_name + pos(pin.x, pin.y)) == 2) {
+                printf("junction %s\n", pos(pin.x, pin.y));
+                if(is_common_signal(pin.net)) {
+                    printf("name '%s' %s\n", pin.net, pos(pin.x, pin.y));
+                } else {
+                    printf("name '%s%s' %s\n", temporary_net_prefix,
+                           pin.net, pos(pin.x, pin.y));
+                    rename_list += "name '" + pin.net + "' " +
+                                   pos(pin.x, pin.y) + "\n";
+                }
+                rename_list += "delete " + pos(pin.x, pin.y) + "\n";
+            }
+        }
+    }
+    printf("%s", rename_list);
 }
 
 void copy_polygon(UL_POLYGON p, string name) {
-	string position = "";
+    string position = "";
 
-	if(name != "") {
-		name = "'" + name + "' ";
-	}
+    if(name != "") {
+        name = "'" + name + "' ";
+    }
 
-	if(name != "") {
-		change_rank(p.rank);
-	}
-	change_isolate(p.isolate);
-	change_layer(p.layer);
-	change_orphans(p.orphans);
-	change_pour(p.pour);
-	if(p.rank > 0) change_rank(p.rank);
-	change_spacing(p.spacing);
-	change_thermals(p.thermals);
-	printf("polygon %s%f", name, u2mm(p.width));
-	p.wires(w) {
-		printf(" %s", pos(w.x1, w.y1));
-		if(w.arc) {
-			printf(" %+f", w.curve);
-		}
-		position = pos(w.x2, w.y2);
-	}
-	printf(" %s\n", position);
+    if(name != "") {
+        change_rank(p.rank);
+    }
+    change_isolate(p.isolate);
+    change_layer(p.layer);
+    change_orphans(p.orphans);
+    change_pour(p.pour);
+    if(p.rank > 0) change_rank(p.rank);
+    change_spacing(p.spacing);
+    change_thermals(p.thermals);
+    printf("polygon %s%f", name, u2mm(p.width));
+    p.wires(w) {
+        printf(" %s", pos(w.x1, w.y1));
+        if(w.arc) {
+            printf(" %+f", w.curve);
+        }
+        position = pos(w.x2, w.y2);
+    }
+    printf(" %s\n", position);
 }
 
 void copy_rectangle(UL_RECTANGLE r) {
-	change_layer(r.layer);
-	printf("rect r%f %s %s\n", r.angle, pos(r.x1, r.y1), pos(r.x2, r.y2));
+    change_layer(r.layer);
+    printf("rect r%f %s %s\n", r.angle, pos(r.x1, r.y1), pos(r.x2, r.y2));
 }
 
 void copy_text(UL_TEXT t) {
-	change_font(t.font);
-	change_layer(t.layer);
-	change_ratio(t.ratio);
-	change_size(t.size);
-	printf("text '%s' %s %s\n", t.value,
-			orientation(t.angle, t.mirror, t.spin, FALSE), pos(t.x, t.y));
+    change_font(t.font);
+    change_layer(t.layer);
+    change_ratio(t.ratio);
+    change_size(t.size);
+    printf("text '%s' %s %s\n", t.value,
+           orientation(t.angle, t.mirror, t.spin, FALSE), pos(t.x, t.y));
 }
 
 string shape[] = {"square", "round", "octagon"};
 void copy_via(UL_VIA v, string name) {
-	change_drill(v.drill);
-	printf("via '%s' %f %s %d-%d %s\n", name, u2mm(v.diameter[v.start]),
-			shape[v.shape[v.start]], v.start, v.end, pos(v.x, v.y));
+    change_drill(v.drill);
+    printf("via '%s' %f %s %d-%d %s\n", name, u2mm(v.diameter[v.start]),
+           shape[v.shape[v.start]], v.start, v.end, pos(v.x, v.y));
 }
 
 void copy_wire(string type, UL_WIRE w, string name) {
-	string curve = "";
-	string width = "";
+    string curve = "";
+    string width = "";
 
-	if(name != "" && type == "net") {
-		add_wire(name);
-	}
+    if(name != "" && type == "net") {
+        add_wire(name);
+    }
 
-	// do not copy air wires
-	if(w.layer != layer_unrouted) {
-		if(name != "") {
-			name = "'" + name + "' ";
-		}
+    // do not copy air wires
+    if(w.layer != layer_unrouted) {
+        if(name != "") {
+            name = "'" + name + "' ";
+        }
 
-		if(w.arc) {
-			sprintf(curve, "%+f ", w.curve);
-			change_cap(w.cap);
-		}
+        if(w.arc) {
+            sprintf(curve, "%+f ", w.curve);
+            change_cap(w.cap);
+        }
 
-		if(type == "wire") {
-			sprintf(width, "%f ", u2mm(w.width));
-		}
+        if(type == "wire") {
+            sprintf(width, "%f ", u2mm(w.width));
+        }
 
-		change_layer(w.layer);
-		change_style(w.style);
+        change_layer(w.layer);
+        change_style(w.style);
 
-		printf("%s %s%s%s %s%s\n", type, name, width,
-				pos(w.x1, w.y1), curve, pos(w.x2, w.y2));
-	}
+        printf("%s %s%s%s %s%s\n", type, name, width,
+               pos(w.x1, w.y1), curve, pos(w.x2, w.y2));
+    }
 }
 
 void copy_segment(string type, UL_SEGMENT seg, string name) {
-	string position = "";
+    string position = "";
 
-	seg.wires(w) {
-		position = pos(w.x1, w.y1);
-		copy_wire(type, w, name);
-	}
+    seg.wires(w) {
+        position = pos(w.x1, w.y1);
+        copy_wire(type, w, name);
+    }
 
-	if(position != "") {
-		seg.labels(l) {
-			change_layer(l.layer);
-			change_ratio(l.text.ratio);
-			change_size(l.text.size);
-			change_font(l.text.font);
-			printf("label %s %s %s\n",
-					orientation(l.angle, l.mirror, l.spin, FALSE),
-					position, pos(l.x, l.y));
-		}
-	}
+    if(position != "") {
+        seg.labels(l) {
+            change_layer(l.layer);
+            change_ratio(l.text.ratio);
+            change_size(l.text.size);
+            change_font(l.text.font);
+            printf("label %s %s %s\n",
+                   orientation(l.angle, l.mirror, l.spin, FALSE),
+                   position, pos(l.x, l.y));
+        }
+    }
 }
 
 output(schematic_filename) {
-	string sheet_name;
+    string sheet_name;
 
-	printf("edit .brd\n");
-	printf("edit .sch\n");
-	printf("set Warning.PartHasNoUserDefinableValue 0\n");
-	printf("set wire_bend 2\n");
-	printf("grid mm\n");
+    printf("edit .brd\n");
+    printf("edit .sch\n");
+    printf("set Warning.PartHasNoUserDefinableValue 0\n");
+    printf("set wire_bend 2\n");
+    printf("grid mm\n");
 
-	project.schematic(sch) {
-		sch.sheets(s) {
-			printf("edit .s%d\n", s.number);
-			sprintf(sheet_name, "s%03d ", s.number);
+    project.schematic(sch) {
+        sch.sheets(s) {
+            printf("edit .s%d\n", s.number);
+            sprintf(sheet_name, "s%03d ", s.number);
 
-			if(copy_relative_to_lower_left_corner) {
-				dx = u2mm(-s.area.x1);
-				dy = u2mm(-s.area.y1);
-			}
+            if(copy_relative_to_lower_left_corner) {
+                dx = u2mm(-s.area.x1);
+                dy = u2mm(-s.area.y1);
+            }
 
-			s.parts(p) {
-				p.instances(i) {
-					copy_instance(sheet_name, p, i);
-				}
-				p.attributes(a) {
-					copy_attribute(p.name, a);
-				}
-			}
+            s.parts(p) {
+                p.instances(i) {
+                    copy_instance(sheet_name, p, i);
+                }
+                p.attributes(a) {
+                    copy_attribute(p.name, a);
+                }
+            }
 
-			s.busses(b) {
-				add_bus_names(b.name);
-				b.segments(seg) {
-					copy_segment("bus", seg, b.name);
-				}
-			}
+            s.busses(b) {
+                add_bus_names(b.name);
+                b.segments(seg) {
+                    copy_segment("bus", seg, b.name);
+                }
+            }
 
-			s.nets(n) {
-				n.segments(seg) {
-					copy_segment("net", seg, n.name);
-				}
-			}
+            s.nets(n) {
+                n.segments(seg) {
+                    copy_segment("net", seg, n.name);
+                }
+            }
 
-			s.circles(c) {
-				copy_circle(c);
-			}
+            s.circles(c) {
+                copy_circle(c);
+            }
 
-			s.frames(f) {
-				copy_frame(f);
-			}
+            s.frames(f) {
+                copy_frame(f);
+            }
 
-			s.polygons(p) {
-				copy_polygon(p, "");
-			}
+            s.polygons(p) {
+                copy_polygon(p, "");
+            }
 
-			s.rectangles(r) {
-				copy_rectangle(r);
-			}
+            s.rectangles(r) {
+                copy_rectangle(r);
+            }
 
-			s.texts(t) {
-				copy_text(t);
-			}
+            s.texts(t) {
+                copy_text(t);
+            }
 
-			s.wires(w) {
-				copy_wire("wire", w, "");
-			}
-		}
+            s.wires(w) {
+                copy_wire("wire", w, "");
+            }
+        }
 
-		sch.attributes(a) {
-			copy_attribute("*", a);
-		}
-	}
+        sch.attributes(a) {
+            copy_attribute("*", a);
+        }
+    }
 
-	if(enable_PartHasNoUserDefinableValue_warning) {
-		printf("set Warning.PartHasNoUserDefinableValue 1\n");
-	}
-	printf("window fit\n");
-	printf("grid last\n");
+    if(enable_PartHasNoUserDefinableValue_warning) {
+        printf("set Warning.PartHasNoUserDefinableValue 1\n");
+    }
+    printf("window fit\n");
+    printf("grid last\n");
 }
 
 if(fileerror()) {
-	dlgMessageBox(";Please make sure that the variable <b>basedir</b> specified in <i>copypaste_config.ulp</i> is set to an user-writable directory.");
-	exit(1);
+    dlgMessageBox(";Please make sure that the variable <b>basedir</b> specified in <i>copypaste_config.ulp</i> is set to an user-writable directory.");
+    exit(1);
 }
 
 output(board_filename) {
-	printf("edit .brd\n");
-	printf("set wire_bend 2\n");
-	printf("grid mm\n");
+    printf("edit .brd\n");
+    printf("set wire_bend 2\n");
+    printf("grid mm\n");
 
-	project.board(b) {
-		if(copy_relative_to_lower_left_corner) {
-			dx = u2mm(-b.area.x1);
-			dy = u2mm(-b.area.y1);
-		}
+    project.board(b) {
+        if(copy_relative_to_lower_left_corner) {
+            dx = u2mm(-b.area.x1);
+            dy = u2mm(-b.area.y1);
+        }
 
-		b.layers(l) {
-			// Copy user defined layers (number >= 100) to the new board
-			// if they are used.
-			if(l.number >= 100 && l.used) {
-				printf("layer %d %s; ", l.number,
-						strreplace(l.name, ' ', '_'));
-				printf("set color_layer %d %d\n", l.number, l.color);
-			}
-		}
+        b.layers(l) {
+            // Copy user defined layers (number >= 100) to the new board
+            // if they are used.
+            if(l.number >= 100 && l.used) {
+                printf("layer %d %s; ", l.number, strreplace(l.name, ' ', '_'));
+                printf("set color_layer %d %d\n", l.number, l.color);
+            }
+        }
 
-		b.elements(e) {
-			copy_element(e);
-		}
+        b.elements(e) {
+            copy_element(e);
+        }
 
-		b.frames(f) {
-			copy_frame(f);
-		}
+        b.frames(f) {
+            copy_frame(f);
+        }
 
-		b.signals(s) {
-			s.vias(v) {
-				copy_via(v, s.name);
-			}
+        b.signals(s) {
+            s.vias(v) {
+                copy_via(v, s.name);
+            }
 
-			s.wires(w) {
-				copy_wire("wire", w, s.name);
-			}
+            s.wires(w) {
+                copy_wire("wire", w, s.name);
+            }
 
-			s.polygons(p) {
-				copy_polygon(p, s.name);
-			}
-		}
+            s.polygons(p) {
+                copy_polygon(p, s.name);
+            }
+        }
 
-		b.rectangles(r) {
-			copy_rectangle(r);
-		}
+        b.rectangles(r) {
+            copy_rectangle(r);
+        }
 
-		b.wires(w) {
-			copy_wire("wire", w, "");
-		}
+        b.wires(w) {
+            copy_wire("wire", w, "");
+        }
 
-		b.polygons(p) {
-			copy_polygon(p, "");
-		}
+        b.polygons(p) {
+            copy_polygon(p, "");
+        }
 
-		b.circles(c) {
-			copy_circle(c);
-		}
+        b.circles(c) {
+            copy_circle(c);
+        }
 
-		b.texts(t) {
-			copy_text(t);
-		}
+        b.texts(t) {
+            copy_text(t);
+        }
 
-		b.holes(h) {
-			copy_hole(h);
-		}
-	}
+        b.holes(h) {
+            copy_hole(h);
+        }
+    }
 
-	printf("window fit\n");
-	printf("grid last\n");
+    printf("window fit\n");
+    printf("grid last\n");
 }
 
 if(debug) {
-	output(copypaste_info) {
-		part_list_print("");
-		wire_list_print("");
-		pin_point_list_print("");
-	}
+    output(copypaste_info) {
+        part_list_print("");
+        wire_list_print("");
+        pin_point_list_print("");
+    }
 }

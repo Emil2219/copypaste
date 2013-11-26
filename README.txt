@@ -79,7 +79,7 @@ int foo[];
 int bar[];
 
 int inc(int *list, int index) {
-	list[index]++;
+    list[index]++;
 }
 
 inc(foo, 42);
@@ -91,11 +91,11 @@ int foo[];
 int bar[];
 
 int foo_inc(int index) {
-	foo[index]++;
+    foo[index]++;
 }
 
 int bar_inc(int index) {
-	bar[index]++;
+    bar[index]++;
 }
 
 foo_inc(42);
@@ -106,8 +106,8 @@ bar_inc(21);
 What I want to write:
 
 typedef struct {
-	int foo;
-	int bar;
+    int foo;
+    int bar;
 } example_structure;
 
 example_structure foobar;
