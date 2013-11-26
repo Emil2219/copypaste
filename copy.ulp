@@ -558,12 +558,12 @@ output(board_filename) {
 			dy = u2mm(-b.area.y1);
 		}
 
-		b.layers(L) {
+		b.layers(l) {
 			// Copy all layers >=100 to new board
-			if(L.number >= 100) {
-				printf("layer %d %s\n", L.number,
-						strreplace(L.name, ' ', '_'));
-				printf("set color_layer %d %d\n", L.number, L.color);
+			if(l.number >= 100) {
+				printf("layer %d %s\n", l.number,
+						strreplace(l.name, ' ', '_'));
+				printf("set color_layer %d %d\n", l.number, l.color);
 			}
 		}
 
